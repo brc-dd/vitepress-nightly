@@ -5,5 +5,5 @@ Automated daily testing releases for [VitePress](https://github.com/vuejs/vitepr
 To install, run:
 
 ```sh
-npm add @brc-dd/vitepress@next
+npm add -D @brc-dd/vitepress@next
 ```
