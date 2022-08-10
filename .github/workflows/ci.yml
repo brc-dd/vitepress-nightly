@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: vuejs/vitepress
+          ref: chore/vite-3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          registry-url: https://npm.pkg.github.com
+          cache: pnpm
+      - env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tmp=$(mktemp)
+          version=$(jq -r '.version' package.json | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)
+          jq --arg v "$version" '.version = $v | .name = "@brc-dd/vitepress" | del(.repository)' package.json > "$tmp" && mv "$tmp" package.json
+          pnpm i --frozen-lockfile
+          pnpm docs-build
+          pnpm publish --tag next --ignore-scripts --no-git-checks
