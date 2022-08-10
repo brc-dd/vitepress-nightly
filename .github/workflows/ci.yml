@@ -30,4 +30,4 @@ jobs:
           jq --arg v "$version" '.version = $v | .name = "@brc-dd/vitepress" | del(.repository)' package.json > "$tmp" && mv "$tmp" package.json
           pnpm i --frozen-lockfile
           pnpm docs-build
-          pnpm publish --tag next --ignore-scripts --no-git-checks
+          pnpm publish --tag next --ignore-scripts --no-git-checks --access public
